@@ -6,7 +6,6 @@ await Actor.init();
 const input = await Actor.getInput() || {};
 
 // 2. Define the payload for the target actor
-// We merge user input with defaults to ensure it matches the scraper's requirements
 const scraperInput = {
     urls: input.urls || ["https://www.linkedin.com/jobs/search/?position=1&pageNum=0"],
     count: input.count || 100,
@@ -15,27 +14,41 @@ const scraperInput = {
 };
 
 console.log('--- Starting LinkedIn Jobs Scraper ---');
-console.log(`Targeting URLs: ${scraperInput.urls.length}`);
-console.log(`Desired Count: ${scraperInput.count}`);
 
 try {
     // 3. Call the external actor and wait for it to finish
-    // This uses your Apify credits to run the 'curious_coder/linkedin-jobs-scraper'
     const run = await Actor.call('curious_coder/linkedin-jobs-scraper', scraperInput);
 
     if (run.status === 'SUCCEEDED') {
         console.log(`Scraper successfully finished. Run ID: ${run.id}`);
 
         // 4. Retrieve results from the scraper's dataset
-        // Using a limit of 99999 to ensure we get all items from the sub-run
         const { items } = await Actor.apifyClient.run(run.id).dataset().listItems({
             limit: 99999,
         });
 
-        console.log(`Retrieved ${items.length} items. Saving to your dataset...`);
+        console.log(`Filtering ${items.length} items to keep only requested columns...`);
 
-        // 5. Push the data to the current actor's dataset
-        await Actor.pushData(items);
+        // 5. Transform and filter items to specific columns only
+        const filteredItems = items.map((item) => ({
+            link: item.link,
+            title: item.title,
+            companyName: item.companyName,
+            companyLinkedinUrl: item.companyLinkedinUrl,
+            location: item.location,
+            postedAt: item.postedAt,
+            benefits: item.benefits,
+            descriptionHtml: item.descriptionHtml,
+            applicantsCount: item.applicantsCount,
+            descriptionText: item.descriptionText,
+            seniorityLevel: item.seniorityLevel,
+            industries: item.industries,
+            companyWebsite: item.companyWebsite,
+            companyEmployeesCount: item.companyEmployeesCount,
+        }));
+
+        // 6. Push the cleaned data to the current actor's dataset
+        await Actor.pushData(filteredItems);
         
         console.log('--- Process Complete ---');
     } else {
