@@ -1,0 +1,13 @@
+{
+    "name": "linkedin-job-scraper",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "run linkedin-jobs-scraper and collect results.",
+    "dependencies": {
+        "apify": "^3.1.10"
+    },
+    "scripts": {
+        "start": "node main.js"
+    },
+    "author": "Apify User"
+}
