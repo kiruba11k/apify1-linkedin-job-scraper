@@ -1,0 +1,36 @@
+{
+    "title": "LinkedIn Job Scraper",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "urls": {
+            "title": "LinkedIn Search URLs",
+            "type": "array",
+            "description": "Paste one or more LinkedIn Job Search URLs here.",
+            "editor": "stringList",
+            "prefill": [
+                "https://www.linkedin.com/jobs/search/?position=1&pageNum=0"
+            ]
+        },
+        "count": {
+            "title": "Max Items",
+            "type": "integer",
+            "description": "Number of jobs to scrape per search URL.",
+            "default": 100,
+            "minimum": 1
+        },
+        "scrapeCompany": {
+            "title": "Scrape Company Details",
+            "type": "boolean",
+            "description": "If enabled, extracts full company descriptions and employee counts.",
+            "default": true
+        },
+        "splitByLocation": {
+            "title": "Split by Location",
+            "type": "boolean",
+            "description": "Enable this to bypass the 1000-job LinkedIn limit by splitting searches into smaller areas.",
+            "default": false
+        }
+    },
+    "required": ["urls"]
+}
